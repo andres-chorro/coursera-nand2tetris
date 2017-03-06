@@ -39,32 +39,33 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
-    And(a=instruction[15], b=instruction[5], out=writeA);
-    And(a=instruction[15], b=instruction[4], out=writeD);
-    And(a=instruction[15], b=instruction[3], out=writeM);
-    Not(in=instruction[15], out=isAinstruction);
-    Mux16(a=ALUout, b=instruction, sel=isAinstruction, out=Ainput); // take A from instruction if Ainstruction.
-    Or(a=isAinstruction, b=writeA, out=loadA);
-    
-    ARegister(in=Ainput, load=loadA, out=ARegOut, out[0..14]=addressM);
-    Mux16(a=ARegOut, b=inM, sel=instruction[12], out=MorAOut);
-    DRegister(in=ALUout, load=writeD, out=DRegOut);
-    ALU(x=DRegOut, y=MorAOut, 
-        zx=instruction[6], nx=instruction[7], zy=instruction[8],
-        ny=instruction[9], f=instruction[10], no=instruction[11],
-        out=ALUout, zr=zr, ng=ng);
-    
-    // jump logic
-    Not(in=ng, out=NOTng);
-    Not(in=zr, out=NOTzr);
-    And(a=instruction[0], b=NOTng, out=GTorZ);
-    And(a=instruction[2], b=ng, out=LTorZ);
-    And(a=NOTzr, b=LTorZ, out=LTorGT);
+        And(a=instruction[15], b=instruction[5], out=writeA);
+        And(a=instruction[15], b=instruction[4], out=writeD);
+        And(a=instruction[15], b=instruction[3], out=writeM);
+        Not(in=instruction[15], out=isAinstruction);
+        Mux16(a=ALUout, b=instruction, sel=isAinstruction, out=Ainput); // take A from instruction if Ainstruction.
+        Or(a=isAinstruction, b=writeA, out=loadA);
+        
+        ARegister(in=Ainput, load=loadA, out=ARegOut, out[0..14]=addressM);
+        Mux16(a=ARegOut, b=inM, sel=instruction[12], out=MorAOut);
+        DRegister(in=ALUout, load=writeD, out=DRegOut);
+        ALU(x=DRegOut, y=MorAOut, 
+            zx=instruction[11], nx=instruction[10], zy=instruction[9],
+            ny=instruction[8], f=instruction[7], no=instruction[6],
+            out=ALUout, out=outM, zr=zr, ng=ng);
+        
+        // jump logic
+        Not(in=ng, out=NOTng);
+        Not(in=zr, out=NOTzr);
+        And(a=instruction[0], b=NOTng, out=GTorZ);
+        And(a=instruction[2], b=ng, out=LTorZ);
+        Or(a=GTorZ, b=LTorZ, out=jumpIfNotZR);
+        And(a=NOTzr, b=jumpIfNotZR, out=LTorGT);
 
-    And(a=instruction[0], b=zr, out=Zjump);
-    Or(a=Zjump, b=LTorGT, out=jump);
+        And(a=instruction[1], b=zr, out=Zjump);
+        Or(a=Zjump, b=LTorGT, out=jump);
 
-    And(a=instruction[15], b=jump, out=doJump);
+        And(a=instruction[15], b=jump, out=doJump);
 
-    PC(in=ARegOut, load=doJump, inc=true, reset=reset, out[0..14]=pc);
+        PC(in=ARegOut, load=doJump, inc=true, reset=reset, out[0..14]=pc);
 }
