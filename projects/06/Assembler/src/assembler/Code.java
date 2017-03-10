@@ -10,6 +10,7 @@ public class Code {
 
 	static {
 		destMap = new HashMap<>();
+		destMap.put("", "000");
 		destMap.put("M", "001");
 		destMap.put("D", "010");
 		destMap.put("MD", "011");
@@ -17,7 +18,7 @@ public class Code {
 		destMap.put("AM", "101");
 		destMap.put("AD", "110");
 		destMap.put("AMD", "111");
-		destMap.put("", "000");
+		
 
 		compMap = new HashMap<>();
 		compMap.put("0", "0101010");
@@ -25,8 +26,8 @@ public class Code {
 		compMap.put("-1", "0111010");
 		compMap.put("D", "0001100");
 		compMap.put("A", "0110000");
-		compMap.put("!D", "0001111");
-		compMap.put("!A", "0110011");
+		compMap.put("!D", "0001101");
+		compMap.put("!A", "0110001");
 		compMap.put("-D", "0001111");
 		compMap.put("-A", "0110011");
 		compMap.put("D+1", "0011111");
