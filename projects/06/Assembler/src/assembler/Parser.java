@@ -2,29 +2,50 @@ package assembler;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.*;
 
 
 
 public class Parser {
-	private FileReader reader;
+	private Scanner sc;
 	private String currentCommand;
+	private CommandType currentCommandType;
 	
-	public Parser(String inputFileName) throws FileNotFoundException {
-		reader = new FileReader(inputFileName);
+	public Parser(String inputFileName) {
+		try {
+			sc = new Scanner(new FileReader(inputFileName));
+			//sc.useDelimiter("//.*\\n|\\s");
+		} catch (FileNotFoundException e) {
+			System.out.println(e);
+		}
 	}
 	
 	public boolean hasMoreCommands() {
-		//TODO
-		return false;
+		return sc.hasNext();
 	}
 	
 	public void advance() {
-		//TODO
+		boolean commandFound = false;
+		while (!commandFound) {
+			currentCommand = sc.next();
+			if (currentCommand.startsWith("//"))
+				sc.nextLine();
+			else
+				commandFound = true;
+		}
 	}
 	
 	public CommandType commandType() {
-		//TODO
-		return null;
+		if (currentCommand.startsWith("("))
+			return CommandType.L_COMMAND;
+		else if (currentCommand.startsWith("@"))
+			return CommandType.A_COMMAND;
+		else
+			return CommandType.C_COMMAND;
+	}
+	
+	public String getCurrentCommand() {
+		return currentCommand;
 	}
 	
 	public String symbol() {
@@ -45,6 +66,10 @@ public class Parser {
 	public String jump() {
 		//TODO
 		return null;
+	}
+	
+	public void close() {
+		sc.close();
 	}
 	
 }
