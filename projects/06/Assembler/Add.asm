@@ -9,6 +9,6 @@
 D=A //weirdComment space
 
 @3 // comment with spaces
-D=D+A
+D=D+A;JGE
 @0
-M=D
+0;JMP
