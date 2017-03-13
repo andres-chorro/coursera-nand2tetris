@@ -33,33 +33,39 @@ public class HackAssembler {
 	}
 
 	public void assemble() throws IOException {
-		firstPass();
-		secondPass();
+		populateSymbolTable();
+		writeCommands();
 		output.close();
 		p.close();
 	}
 
-	private void firstPass() {
+	private void populateSymbolTable() {
 		addPredefinedSymbols();
+		
 		int lineNumber = 0;
-		int nextOpenAddress = 16;
 		while (p.hasMoreCommands()) {
 			p.advance();
 			if (currentCommandIsLabel()) {
 				symbolTable.addEntry(p.symbol(), lineNumber);
-			} else if (currentCommandIsASymbol() && 
+			} else {
+				lineNumber++;
+			}		
+		}
+		p.reset();
+		
+		int nextOpenAddress = 16;
+		while (p.hasMoreCommands()) {
+			p.advance();
+			if (currentCommandIsASymbol() && 
 					!symbolTable.contains(p.symbol())) {
 				symbolTable.addEntry(p.symbol(), nextOpenAddress);
 				nextOpenAddress++;
-				lineNumber++;
-			} else {
-				lineNumber++;
 			}
 		}
 		p.reset();
 	}
 	
-	private void secondPass() throws IOException {
+	private void writeCommands() throws IOException {
 		while (p.hasMoreCommands()) {
 			p.advance();
 			if (currentCommandIsLabel()) {
