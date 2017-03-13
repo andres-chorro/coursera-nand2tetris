@@ -99,6 +99,10 @@ public class Parser {
 			return currentCommand.substring(semicolonIndex + 1, currentCommand.length());
 		}
 	}
+	
+	public void reset() {
+		currentIndex = -1;
+	}
 
 	public void close() {
 		sc.close();
